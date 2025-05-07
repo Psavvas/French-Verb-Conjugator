@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>French Verb Conjugation Tool</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background-color: #fdfdfd;
+    }
+    h1, h2 {
+      color: #333;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 40px;
+    }
+    th, td {
+      border: 1px solid #999;
+      padding: 8px 12px;
+      text-align: center;
+    }
+    th {
+      background-color: #f0f0f0;
+    }
+    .verb {
+      font-weight: bold;
+      background-color: #e8f4ff;
+    }
+    .form-section {
+      margin-bottom: 40px;
+      padding: 20px;
+      background-color: #eef6ff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    label, select, input {
+      font-size: 16px;
+      margin-right: 10px;
+    }
+    #result {
+      font-weight: bold;
+      margin-top: 20px;
+      color: #0057a3;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>French Verb Conjugation Tool</h1>
+
+  <div class="form-section">
+    <label for="verbType">Verb Type:</label>
+    <select id="verbType">
+      <option value="er">-ER</option>
+      <option value="ir">-IR</option>
+      <option value="re">-RE</option>
+    </select>
+
+    <label for="tense">Tense:</label>
+    <select id="tense">
+      <option value="present">Present</option>
+      <option value="future">Future</option>
+      <option value="passe">Passé Composé</option>
+      <option value="imparfait">Imparfait</option>
+    </select>
+
+    <label for="person">Person:</label>
+    <select id="person">
+      <option value="je">Je</option>
+      <option value="tu">Tu</option>
+      <option value="il">Il/Elle/On</option>
+      <option value="nous">Nous</option>
+      <option value="vous">Vous</option>
+      <option value="ils">Ils/Elles</option>
+    </select>
+
+    <label for="stem">Verb Stem:</label>
+    <input type="text" id="stem" placeholder="e.g. parl, fin, vend">
+
+    <button onclick="conjugate()">Conjugate</button>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    function conjugate() {
+      const verbType = document.getElementById('verbType').value;
+      const tense = document.getElementById('tense').value;
+      const person = document.getElementById('person').value;
+      const stem = document.getElementById('stem').value.trim();
+
+      if (!stem) {
+        document.getElementById('result').innerText = "Please enter a verb stem.";
+        return;
+      }
+
+      const endings = {
+        present: {
+          er: { je: 'e', tu: 'es', il: 'e', nous: 'ons', vous: 'ez', ils: 'ent' },
+          ir: { je: 'is', tu: 'is', il: 'it', nous: 'issons', vous: 'issez', ils: 'issent' },
+          re: { je: 's', tu: 's', il: '', nous: 'ons', vous: 'ez', ils: 'ent' }
+        },
+        future: {
+          er: { je: 'ai', tu: 'as', il: 'a', nous: 'ons', vous: 'ez', ils: 'ont' },
+          ir: { je: 'ai', tu: 'as', il: 'a', nous: 'ons', vous: 'ez', ils: 'ont' },
+          re: { je: 'ai', tu: 'as', il: 'a', nous: 'ons', vous: 'ez', ils: 'ont' }
+        },
+        passe: {
+          er: { aux: 'avoir', pp: 'é' },
+          ir: { aux: 'avoir', pp: 'i' },
+          re: { aux: 'avoir', pp: 'u' }
+        },
+        imparfait: {
+          er: { je: 'ais', tu: 'ais', il: 'ait', nous: 'ions', vous: 'iez', ils: 'aient' },
+          ir: { je: 'ais', tu: 'ais', il: 'ait', nous: 'ions', vous: 'iez', ils: 'aient' },
+          re: { je: 'ais', tu: 'ais', il: 'ait', nous: 'ions', vous: 'iez', ils: 'aient' }
+        }
+      };
+
+      let result = '';
+
+      if (tense === 'passe') {
+        const subject = person === 'je' ? "J'" : person.charAt(0).toUpperCase() + person.slice(1);
+        const participle = stem + endings.passe[verbType].pp;
+        const avoir = {
+          je: 'ai', tu: 'as', il: 'a', nous: 'avons', vous: 'avez', ils: 'ont'
+        }[person];
+        result = `${subject} ${avoir} ${participle}`;
+      } else if (tense === 'future' && verbType === 're') {
+        const fullStem = stem.slice(0, -1); // drop final 'e'
+        result = `${person === 'je' ? "Je" : person.charAt(0).toUpperCase() + person.slice(1)} ${fullStem}${endings.future.re[person]}`;
+      } else {
+        const ending = endings[tense][verbType][person];
+        const full = stem + ending;
+        result = `${person === 'je' ? "Je" : person.charAt(0).toUpperCase() + person.slice(1)} ${full}`;
+      }
+
+      document.getElementById('result').innerText = "Conjugation: " + result;
+    }
+  </script>
+
+</body>
+</html>
